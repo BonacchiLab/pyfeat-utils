@@ -114,7 +114,7 @@ if "video" in process_types:
                         continue
                     # Converter o frame de BGR para RGB (para exibição com matplotlib)
                     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    # Exibir o frame como imagem
+                    # Exibir o frame como imagem.
                     plt.figure(figsize=(20, 16))
                     plt.imshow(frame_rgb)
                     plt.title(f"Frame {frame_number} - {emotion} > 0.8")
