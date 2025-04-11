@@ -29,7 +29,7 @@ with open(config_path, "r") as config_file:
     config = json.load(config_file)
 
 # Determinar se o script deve processar imagens, vídeos ou ambos
-process_types = config.get("process_type", ["image", "video"])  # Padrão: ambos
+process_types = config.get("process_type", ["image", "video"])  
 
 # Obter todos os arquivos na pasta input_data
 input_files = glob(os.path.join(input_data_dir, "*"))
@@ -62,7 +62,7 @@ if "video" in process_types:
     for video_path in video_files:
         print(f"Processing videos: {video_path}")
         # Abrir o vídeo com OpenCV
-        cap = cv2.VideoCapture(video_path)  # Corrigido: usar video_path em vez de video_files
+        cap = cv2.VideoCapture(video_path)  
 
         # Verificar se o vídeo foi aberto corretamente
         if not cap.isOpened():
@@ -126,6 +126,4 @@ if "video" in process_types:
         # Libertar o vídeo
         cap.release()
 
-#descriptive= input(print("Proced to descriptive statistics? (y/n): "))
-#if descriptive == "y":
-
+descriptive= input(print("Proced to descriptive statistics? (y/n): "))
