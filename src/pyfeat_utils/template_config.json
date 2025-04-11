@@ -1,0 +1,35 @@
+{
+  "data_processing": {
+    "input_data": "~/Documents/pyfeat-utils/input_data",
+    "output_data": "~/Documents/pyfeat-utils/output_data",
+    "process_type": ["image", "video"]
+  },
+  "image_processing": {
+    "image_size": [224, 224],
+    "batch_size": 32,
+    "num_epochs": 10,
+    "learning_rate": 0.001,
+    "model_type": ["resnet", "vgg", "inception"]
+  },
+  "video_processing": {
+    "frame_rate": 30,
+    "num_frames": 16,
+    "batch_size": 8,
+    "num_epochs": 5,
+    "learning_rate": 0.0001,
+    "model_type": ["3d_cnn", "lstm"]
+  },
+  "output": {
+    "model_output": "~/Documents/pyfeat-utils/output_data/model_output",
+    "log_file": "~/Documents/pyfeat-utils/output_data/log_file.txt",
+
+    "metrics": {
+      "accuracy": 0.95,
+      "loss": 0.05
+    }
+  },
+  "logging": {
+    "log_level": "DEBUG",
+    "log_file": "~/Documents/pyfeat-utils/output_data/log_file.txt"
+  }
+}

@@ -1,0 +1,34 @@
+
+Ask user for input, file with images/videos (accept file, png, jpg, etc.)
+Not needed if user adds the files to the input_data file 
+
+Resize if needed
+Use batch_size > 1 to choose path
+
+Ask user for input, either video or picture (accept file, png, jpg, etc.)
+
+
+Ask user to confirm input (show image or video)
+
+
+Run all of these for pictures or videos/ Create for loop for images/videos in the file 
+
+Divide into classes for image or video (It should handle more than 1 input)
+
+Function for Face Detection
+
+Function for Landmark Detection + Alignment
+
+Function for Face + Head pose estimation
+
+Function for Action unit detection
+
+Function for emotion detection
+
+Saving to csv, txt, excel, etc. (ask user)
+
+
+# Detect photos or videos
+detector.detect_image('my_img.jpg') # <-- Perform all types of detection on an image
+
+detector.detect_video('my_video.mp4') # <-- Perform all types of detection on video (frames)  
