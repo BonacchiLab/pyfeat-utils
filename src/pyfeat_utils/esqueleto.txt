@@ -27,6 +27,8 @@ Function for emotion detection
 
 Saving to csv, txt, excel, etc. (ask user)
 
+Descriptive statistics, trial trial
+
 
 # Detect photos or videos
 detector.detect_image('my_img.jpg') # <-- Perform all types of detection on an image
