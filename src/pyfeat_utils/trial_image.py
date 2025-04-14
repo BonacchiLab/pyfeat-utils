@@ -33,11 +33,11 @@ figs = single_face_prediction.plot_detections(poses=True)
 print(figs)
 
 # Salvar saída em um arquivo CSV
-single_face_prediction.to_csv("output.csv", index=False)
+#single_face_prediction.to_csv("output.csv", index=False)
 
 # Ler os dados salvos
-from feat.utils.io import read_feat
-input_prediction = read_feat("output.csv")
+#from feat.utils.io import read_feat
+#input_prediction = read_feat("output.csv")
 
 # Visualizar usando o modelo de AU padronizado do Py-Feat
 figs1 = single_face_prediction.plot_detections(faces="aus", muscles=True)

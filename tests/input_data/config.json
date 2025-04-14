@@ -1,7 +1,7 @@
 {
   "data_processing": {
-    "Input_data": "C:\\Users\\Asus\\Documents\\recursos\\teste\\pyfeat-utils\\tests\\input_data",
-    "Output_data": "C:\\Users\\Asus\\Documents\\recursos\\teste\\pyfeat-utils\\tests\\output_data"
+    "input_data": "C:\\Users\\Asus\\Documents\\recursos\\pyfeat-utils\\tests\\input_data",
+    "output_data": "C:\\Users\\Asus\\Documents\\recursos\\teste\\pyfeat-utils\\tests\\output_data"
   }
 }
 
