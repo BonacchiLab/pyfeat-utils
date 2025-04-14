@@ -20,16 +20,17 @@ input_data_dir = os.path.join(os.path.dirname(__file__), "input_data")
 if not os.path.exists(input_data_dir):
     raise FileNotFoundError(f"'input_data' was not {input_data_dir}")
 
-# Carregar configurações do arquivo config.json
-config_path = os.path.join(os.path.dirname(__file__), "config.json")
+# Caminho relativo para o arquivo template_config.json
+config_path = os.path.join(os.path.dirname(__file__), "template_config.json")
 if not os.path.exists(config_path):
-    raise FileNotFoundError(f"'config.json' was not found in {config_path}")
+    raise FileNotFoundError(f"'template_config.json' was not found in {config_path}")
 
+# Carregar configurações do arquivo template_config.json
 with open(config_path, "r") as config_file:
     config = json.load(config_file)
 
 # Determinar se o script deve processar imagens, vídeos ou ambos
-process_types = config.get("process_type", ["image", "video"])  
+process_types = config["data_processing"].get("process_type", ["image", "video"])
 
 # Obter todos os arquivos na pasta input_data
 input_files = glob(os.path.join(input_data_dir, "*"))
@@ -55,6 +56,17 @@ if "image" in process_types:
         # Plotar detecções com poses
         figs = prediction.plot_detections(poses=True)
         plt.show()
+        
+        # Guardar a saída em um arquivo CSV
+        output_dir = config["data_processing"]["output_data"]
+        os.makedirs(output_dir, exist_ok=True)  # Garante que diretório exista
+        # Salvar o DataFrame em um arquivo CSV
+        output_csv_path = os.path.join(output_dir, "output.csv")
+        prediction.to_csv(output_csv_path, index=False)
+        
+        # Ler os dados salvos
+        from feat.utils.io import read_feat
+        input_prediction = read_feat(output_csv_path)
 
 # Processar vídeos
 if "video" in process_types:
