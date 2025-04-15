@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 from glob import glob
 import cv2  # Biblioteca para manipulação de vídeo
 from IPython.display import display
+import time
+
+time1 = time.perf_counter()
 
 # Inicializar o detector
 detector = Detector()
@@ -139,3 +142,6 @@ if "video" in process_types:
         cap.release()
 
 descriptive= input(print("Proced to descriptive statistics? (y/n): "))
+
+time2 = time.perf_counter()
+print(f"Tempo total de processamento: {time2 - time1} segundos")
