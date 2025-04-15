@@ -40,7 +40,7 @@ plt.show()
 # Abrir o vídeo com OpenCV
 cap = cv2.VideoCapture(test_video_path)
 
-try:
+"""try:
     # Verificar se o vídeo foi aberto corretamente
     if not cap.isOpened():
         raise ValueError(f"Não foi possível abrir o vídeo: {test_video_path}")
@@ -79,5 +79,6 @@ try:
         else:
             print(f"Nenhum frame com {emotion} > 0.8.")
 finally:
-    cap.release()
-    print("Recurso de vídeo liberado.")
+    if 'cap' in locals() and cap.isOpened():
+        cap.release()
+    print("Recurso de vídeo liberado.")""" 
