@@ -61,7 +61,7 @@ if "image" in process_types:
         plt.show()
         
         # Guardar a saída em um arquivo CSV
-        output_dir = config["data_processing"]["output_data"]
+        """output_dir = config["data_processing"]["output_data"]
         os.makedirs(output_dir, exist_ok=True)  # Garante que diretório exista
         # Salvar o DataFrame em um arquivo CSV
         output_csv_path = os.path.join(output_dir, "output.csv")
@@ -69,7 +69,7 @@ if "image" in process_types:
         
         # Ler os dados salvos
         from feat.utils.io import read_feat
-        input_prediction = read_feat(output_csv_path)
+        input_prediction = read_feat(output_csv_path)"""
 
 # Processar vídeos
 if "video" in process_types:
@@ -141,7 +141,28 @@ if "video" in process_types:
         # Libertar o vídeo
         cap.release()
 
-descriptive= input(print("Proced to descriptive statistics? (y/n): "))
-
+# Tempo de processamento de imagem e video
 time2 = time.perf_counter()
-print(f"Tempo total de processamento: {time2 - time1} segundos")
+print(f"Processing time for image and videos: {time2 - time1} seconds")
+
+# Perguntar ao usuário se deseja calcular estatísticas descritivas
+descriptive = input("Proceed to descriptive statistics? (y/n): ").strip().lower()
+
+
+#estatisticas descritivas para videos
+if descriptive == "y":
+    
+    print("\nDescriptive statistics for AUS:")
+    descriptive_stats = video_prediction.emotions.describe()
+    print(descriptive_stats)
+
+    # Calcular mediana e quartis
+    mediana = video_prediction.emotions.median()
+    quartis = video_prediction.emotions.quantile([0.25, 0.5, 0.75])
+    print("\nMediana das emoções:")
+    print(mediana)
+    print("\nQuartis das emoções:")
+    print(quartis)
+else:
+    print("Estatísticas descritivas não foram calculadas.")
+
