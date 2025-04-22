@@ -52,9 +52,9 @@ if "image" in process_types:
         # Exibir resultados
         print(prediction.head())
         print(prediction.aus)  # Action Units
-        print(prediction.emotions)  # Emoções
+        print(prediction.emotions)  # Emotions
         print(prediction.poses)  # Head pose
-        print(prediction.identities)  # Identidades
+        print(prediction.identities)  # Identities
 
         # Plotar detecções com poses
         figs = prediction.plot_detections(poses=True)
@@ -81,7 +81,7 @@ if "video" in process_types:
 
         # Verificar se o vídeo foi aberto corretamente
         if not cap.isOpened():
-            print(f"Não foi possível abrir o vídeo: {video_path}")
+            print(f"Could not open the video: {video_path}")
             continue
 
         # Redefinir o índice do DataFrame para evitar ambiguidade
@@ -107,25 +107,25 @@ if "video" in process_types:
             filtered_frames = video_prediction[video_prediction.emotions[emotion] > 0.8]
 
             if not filtered_frames.empty:
-                print(f"Frames com {emotion} > 0.8:")
-                print(filtered_frames[['frame', emotion]])  # Exibir os frames e o valor da emoção
+                print(f"Frames with {emotion} > 0.8:")
+                print(filtered_frames[['frame', emotion]])  # Display the frames and the emotion value
 
                 # Exibir os frames filtrados
                 max_frames_to_process = 5  # Limitar o número de frames processados
                 for i, frame_number in enumerate(filtered_frames['frame']):
                     if i >= max_frames_to_process:
-                        print("Limite de frames processados atingido.")
+                        print("Frame processing limit reached.")
                         break
                     # Verificar se o frame está dentro do alcance do vídeo
                     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
                     if frame_number >= total_frames:
-                        print(f"Frame {frame_number} está fora do alcance do vídeo.")
+                        print(f"{frame_number} is out of video range.")
                         continue
                     # Configurar o vídeo para o frame específico
                     cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
                     ret, frame = cap.read()
                     if not ret:
-                        print(f"Não foi possível capturar o frame {frame_number}.")
+                        print(f"The frame {frame_number} was not captured.")
                         continue
                     # Converter o frame de BGR para RGB (para exibição com matplotlib)
                     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -137,7 +137,7 @@ if "video" in process_types:
                     plt.pause(0.001)  # Exibir sem bloquear o loop
                     plt.close('all')  # Fechar a figura para liberar memória
             else:
-                print(f"Nenhum frame com {emotion} > 0.8.")
+                print(f"No frame had {emotion} > 0.8.")
         # Libertar o vídeo
         cap.release()
 
@@ -149,7 +149,7 @@ print(f"Processing time for image and videos: {time2 - time1} seconds")
 descriptive = input("Proceed to descriptive statistics? (y/n): ").strip().lower()
 
 
-#estatisticas descritivas para videos
+#estatisticas descritivas para videos   
 if descriptive == "y":
     
     print("\nDescriptive statistics for AUS:")
@@ -159,10 +159,10 @@ if descriptive == "y":
     # Calcular mediana e quartis
     mediana = video_prediction.emotions.median()
     quartis = video_prediction.emotions.quantile([0.25, 0.5, 0.75])
-    print("\nMediana das emoções:")
+    print("\nMedian:")
     print(mediana)
-    print("\nQuartis das emoções:")
+    print("\nQuartiles:")
     print(quartis)
 else:
-    print("Estatísticas descritivas não foram calculadas.")
+    print("Descriptive statistics not calculated.")
 
