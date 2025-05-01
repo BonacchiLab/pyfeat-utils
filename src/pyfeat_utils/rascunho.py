@@ -148,21 +148,24 @@ print(f"Processing time for image and videos: {time2 - time1} seconds")
 # Perguntar ao usuário se deseja calcular estatísticas descritivas
 descriptive = input("Proceed to descriptive statistics? (y/n): ").strip().lower()
 
-
-#estatisticas descritivas para videos   
+# Estatísticas descritivas para vídeos
 if descriptive == "y":
-    
-    print("\nDescriptive statistics for AUS:")
-    descriptive_stats = video_prediction.emotions.describe()
-    print(descriptive_stats)
+    for video_path in video_files:
+        video_name = os.path.basename(video_path)
+        print(f"\nDescriptive statistics for video: {video_name}")
 
-    # Calcular mediana e quartis
-    mediana = video_prediction.emotions.median()
-    quartis = video_prediction.emotions.quantile([0.25, 0.5, 0.75])
-    print("\nMedian:")
-    print(mediana)
-    print("\nQuartiles:")
-    print(quartis)
+        # Calcular estatísticas descritivas
+        descriptive_stats = video_prediction.emotions.describe()
+        print("\nDescriptive statistics for AUS:")
+        print(descriptive_stats)
+
+        # Calcular mediana e quartis
+        mediana = video_prediction.emotions.median()
+        quartis = video_prediction.emotions.quantile([0.25, 0.5, 0.75])
+        print("\nMedian:")
+        print(mediana)
+        print("\nQuartiles:")
+        print(quartis)
 else:
     print("Descriptive statistics not calculated.")
 
