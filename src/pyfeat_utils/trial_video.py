@@ -6,13 +6,16 @@ from feat.utils.io import get_test_data_path
 from feat.plotting import imshow
 from IPython.core.display import Video
 import cv2  # Biblioteca para manipulação de vídeo
+import time
+
+time1 = time.perf_counter()
 
 # Inicialização do detector
 detector = Detector()
 fex = Fex()
 
 # Caminho para o vídeo 
-test_video_path = r"C:\Users\Asus\Downloads\video_teste.mp4"
+test_video_path = r"C:\Users\Asus\Downloads\Vídeo sem título - Feito com Clipchamp.mp4"
 
 # Exibir o vídeo
 display(Video(test_video_path, embed=True))
@@ -28,17 +31,21 @@ print(video_prediction.shape)
 print(video_prediction.identities)
 
 # Plotar as emoções ao longo do vídeo
-plt.figure(figsize=(15, 10))
-axes = video_prediction.emotions.plot(title="Emotions throughout the video")
-plt.show()
-plt.close("all")
+#plt.figure(figsize=(15, 10))
+#axes = video_prediction.emotions.plot(title="Emotions throughout the video")
+#plt.show()
+#lt.close("all")
+
+# Tempo de processamento de imagem e video
+time2 = time.perf_counter()
+print(f"Processing time for image and videos: {time2 - time1} seconds")
 
 # Visualizar detecções no vídeo
-figs = video_prediction.plot_detections(poses=True)
-plt.show()
+#figs = video_prediction.plot_detections(poses=True)
+#plt.show()
 
 # Abrir o vídeo com OpenCV
-cap = cv2.VideoCapture(test_video_path)
+#cap = cv2.VideoCapture(test_video_path)
 
 """try:
     # Verificar se o vídeo foi aberto corretamente
