@@ -19,6 +19,8 @@ detector = Detector()
 # Caminho relativo para a pasta de entrada
 input_data_dir = os.path.join(os.path.dirname(__file__), "input_data")
 
+output_data_dir = os.path.join(os.path.dirname(__file__), "output_data")
+
 # Verificar se a pasta existe
 if not os.path.exists(input_data_dir):
     raise FileNotFoundError(f"'input_data' was not {input_data_dir}")
@@ -55,9 +57,18 @@ if "image" in process_types:
         print(prediction.emotions)  # Emotions
         print(prediction.poses)  # Head pose
         print(prediction.identities)  # Identities
+        print(prediction.emotions.plots())
 
         # Plotar detecções com poses
         figs = prediction.plot_detections(poses=True)
+        plt.show()
+
+        # Plotar as emoções detectadas
+        plt.figure(figsize=(15, 10))
+        prediction.emotions.plot(title="Detected Emotions")
+        plt.xlabel("Frames")
+        plt.ylabel("Emotion Intensity")
+        plt.legend(loc="upper right")
         plt.show()
         
         # Guardar a saída em um arquivo CSV
@@ -65,11 +76,7 @@ if "image" in process_types:
         os.makedirs(output_dir, exist_ok=True)  # Garante que diretório exista
         # Salvar o DataFrame em um arquivo CSV
         output_csv_path = os.path.join(output_dir, "output.csv")
-        prediction.to_csv(output_csv_path, index=False)
-        
-        # Ler os dados salvos
-        from feat.utils.io import read_feat
-        input_prediction = read_feat(output_csv_path)"""
+        prediction.to_csv(output_csv_path, index=False)"""
 
 # Processar vídeos
 if "video" in process_types:
@@ -92,10 +99,19 @@ if "video" in process_types:
 
         # Exibir resultados
         print(video_prediction.head())
+        print(prediction.emotions.plots())
 
         # Plotar emoções ao longo do vídeo
         plt.figure(figsize=(15, 10))
         axes = video_prediction.emotions.plot(title="Emotions throughout the video")
+        plt.show()
+
+        # Exibir as emoções detectadas ao longo do vídeo
+        plt.figure(figsize=(15, 10))
+        video_prediction.emotions.plot(title="Emotions throughout the video")
+        plt.xlabel("Frames")
+        plt.ylabel("Emotion Intensity")
+        plt.legend(loc="upper right")
         plt.show()
 
         # Visualizar detecções no vídeo
@@ -140,32 +156,11 @@ if "video" in process_types:
                 print(f"No frame had {emotion} > 0.8.")
         # Libertar o vídeo
         cap.release()
+        
+        """output_csv_path = os.path.join(output_data_dir, "output.csv")
+        prediction.to_csv(output_csv_path, index=False)"""
 
 # Tempo de processamento de imagem e video
 time2 = time.perf_counter()
 print(f"Processing time for image and videos: {time2 - time1} seconds")
-
-# Perguntar ao usuário se deseja calcular estatísticas descritivas
-descriptive = input("Proceed to descriptive statistics? (y/n): ").strip().lower()
-
-# Estatísticas descritivas para vídeos
-if descriptive == "y":
-    for video_path in video_files:
-        video_name = os.path.basename(video_path)
-        print(f"\nDescriptive statistics for video: {video_name}")
-
-        # Calcular estatísticas descritivas
-        descriptive_stats = video_prediction.emotions.describe()
-        print("\nDescriptive statistics for AUS:")
-        print(descriptive_stats)
-
-        # Calcular mediana e quartis
-        mediana = video_prediction.emotions.median()
-        quartis = video_prediction.emotions.quantile([0.25, 0.5, 0.75])
-        print("\nMedian:")
-        print(mediana)
-        print("\nQuartiles:")
-        print(quartis)
-else:
-    print("Descriptive statistics not calculated.")
 
