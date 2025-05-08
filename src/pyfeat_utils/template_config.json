@@ -1,7 +1,6 @@
 {
   "data_processing": {
     "input_data": "~/Documents/pyfeat-utils/input_data",
-    "output_data": "~/Documents/pyfeat-utils/output_data",
     "process_type": ["image", "video"]
   },
   "image_processing": {
