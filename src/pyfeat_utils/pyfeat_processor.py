@@ -57,7 +57,7 @@ if "image" in process_types:
         print(prediction.emotions)  # Emotions
         print(prediction.poses)  # Head pose
         print(prediction.identities)  # Identities
-        print(prediction.emotions.plots())
+
 
         # Plotar detecções com poses
         figs = prediction.plot_detections(poses=True)
@@ -72,11 +72,9 @@ if "image" in process_types:
         plt.show()
         
         # Guardar a saída em um arquivo CSV
-        """output_dir = config["data_processing"]["output_data"]
-        os.makedirs(output_dir, exist_ok=True)  # Garante que diretório exista
-        # Salvar o DataFrame em um arquivo CSV
-        output_csv_path = os.path.join(output_dir, "output.csv")
-        prediction.to_csv(output_csv_path, index=False)"""
+        output_csv_path = os.path.join(input_data_dir, "output.csv")
+        prediction.to_csv(output_csv_path, index=False)
+        print(f"Output CSV saved to {output_csv_path} and added to input data directory.")
 
 # Processar vídeos
 if "video" in process_types:
@@ -99,7 +97,7 @@ if "video" in process_types:
 
         # Exibir resultados
         print(video_prediction.head())
-        print(prediction.emotions.plots())
+    
 
         # Plotar emoções ao longo do vídeo
         plt.figure(figsize=(15, 10))
@@ -157,8 +155,8 @@ if "video" in process_types:
         # Libertar o vídeo
         cap.release()
         
-        """output_csv_path = os.path.join(output_data_dir, "output.csv")
-        prediction.to_csv(output_csv_path, index=False)"""
+        output_csv_path = os.path.join(output_data_dir, "output.csv")
+        prediction.to_csv(output_csv_path, index=False)
 
 # Tempo de processamento de imagem e video
 time2 = time.perf_counter()
