@@ -17,18 +17,5 @@
     "num_epochs": 5,
     "learning_rate": 0.0001,
     "model_type": ["3d_cnn", "lstm"]
-  },
-  "output": {
-    "model_output": "~/Documents/pyfeat-utils/output_data/model_output",
-    "log_file": "~/Documents/pyfeat-utils/output_data/log_file.txt",
-
-    "metrics": {
-      "accuracy": 0.95,
-      "loss": 0.05
-    }
-  },
-  "logging": {
-    "log_level": "DEBUG",
-    "log_file": "~/Documents/pyfeat-utils/output_data/log_file.txt"
   }
 }
