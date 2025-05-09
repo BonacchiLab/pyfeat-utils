@@ -15,14 +15,14 @@ detector = Detector()
 fex = Fex()
 
 # Caminho para o vídeo 
-test_video_path = r"C:\Users\Asus\Downloads\Vídeo sem título - Feito com Clipchamp.mp4"
+test_video_path = r"C:\Users\Asus\Downloads\Vídeo sem título - Feito com Clipchamp (1).mp4"
 
 # Exibir o vídeo
-display(Video(test_video_path, embed=True))
+#display(Video(test_video_path, embed=True))
 
 # Detectar faces no vídeo, skip_frames melhora desempenho
 video_prediction = detector.detect_video(
-    test_video_path, data_type="video", skip_frames=20, face_detection_threshold=0.95
+    test_video_path, data_type="video", skip_frames=30, face_detection_threshold=0.95
 )
 
 # Exibir as primeiras linhas da predição
@@ -31,18 +31,18 @@ print(video_prediction.shape)
 print(video_prediction.identities)
 
 # Plotar as emoções ao longo do vídeo
-#plt.figure(figsize=(15, 10))
-#axes = video_prediction.emotions.plot(title="Emotions throughout the video")
-#plt.show()
-#lt.close("all")
+plt.figure(figsize=(15, 10))
+axes = video_prediction.emotions.plot(title="Emotions throughout the video")
+plt.show()
+plt.close("all")
 
 # Tempo de processamento de imagem e video
 time2 = time.perf_counter()
 print(f"Processing time for image and videos: {time2 - time1} seconds")
 
 # Visualizar detecções no vídeo
-#figs = video_prediction.plot_detections(poses=True)
-#plt.show()
+figs = video_prediction.plot_detections(poses=True)
+plt.show()
 
 # Abrir o vídeo com OpenCV
 #cap = cv2.VideoCapture(test_video_path)
