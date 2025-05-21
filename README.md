@@ -29,7 +29,7 @@ uv pip install -r .\requirements-dev.txt
 ```
 
 If you see no errors, the installation was successful.
-!!! note
+**Note:**  
     First time the Detector is imported it may take a while to load the model. This is normal.
 
 ## Usage
