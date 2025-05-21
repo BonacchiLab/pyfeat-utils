@@ -7,23 +7,23 @@ from feat.plotting import imshow
 from IPython.core.display import Video
 import matplotlib.pyplot as plt
 from glob import glob
-import cv2  # Biblioteca para manipulação de vídeo
+import cv2  
 from IPython.display import display
 import time
+import pandas as pd
 
+# Iniciar temporizador
 time1 = time.perf_counter()
 
-# Inicializar o detector
+# Detetor do pyfeat
 detector = Detector()
 
-# Caminho relativo para a pasta de entrada
-input_data_dir = os.path.join(os.path.dirname(__file__), "input_data")
-
-output_data_dir = os.path.join(os.path.dirname(__file__), "output_data")
+# Caminho 
+data_dir = os.path.join(os.path.dirname(__file__), "input_data")
 
 # Verificar se a pasta existe
-if not os.path.exists(input_data_dir):
-    raise FileNotFoundError(f"'input_data' was not {input_data_dir}")
+if not os.path.exists(data_dir):
+    raise FileNotFoundError(f"'input_data' was not {data_dir}")
 
 # Caminho relativo para o arquivo template_config.json
 config_path = os.path.join(os.path.dirname(__file__), "template_config.json")
@@ -38,7 +38,7 @@ with open(config_path, "r") as config_file:
 process_types = config["data_processing"].get("process_type", ["image", "video"])
 
 # Obter todos os arquivos na pasta input_data
-input_files = glob(os.path.join(input_data_dir, "*"))
+input_files = glob(os.path.join(data_dir, "*"))
 
 # Processar imagens
 if "image" in process_types:
@@ -63,16 +63,9 @@ if "image" in process_types:
         figs = prediction.plot_detections(poses=True)
         plt.show()
 
-        # Plotar as emoções detectadas
-        plt.figure(figsize=(15, 10))
-        prediction.emotions.plot(title="Detected Emotions")
-        plt.xlabel("Frames")
-        plt.ylabel("Emotion Intensity")
-        plt.legend(loc="upper right")
-        plt.show()
         
         # Guardar a saída em um arquivo CSV
-        output_csv_path = os.path.join(input_data_dir, "output.csv")
+        output_csv_path = os.path.join(data_dir, "output.csv")
         prediction.to_csv(output_csv_path, index=False)
         print(f"Output CSV saved to {output_csv_path} and added to input data directory.")
 
@@ -80,85 +73,72 @@ if "image" in process_types:
 if "video" in process_types:
     video_files = [f for f in input_files if f.lower().endswith((".mp4", ".avi", ".mov"))]
     for video_path in video_files:
-        print(f"Processing videos: {video_path}")
+        print(f"Processing video: {video_path}")
+
+        # Detectar características no vídeo
+        video_prediction = detector.detect_video(video_path, data_type="video", skip_frames=20)
+
+        # Adicionar uma coluna de labels para as caras detectadas
+        video_prediction['label'] = video_prediction.index.map(lambda x: f"Face_{x}")
+
+        # Exibir as primeiras linhas do DataFrame de predição
+        print(video_prediction.head())
+
         # Abrir o vídeo com OpenCV
-        cap = cv2.VideoCapture(video_path)  
+        cap = cv2.VideoCapture(video_path)
 
         # Verificar se o vídeo foi aberto corretamente
         if not cap.isOpened():
             print(f"Could not open the video: {video_path}")
             continue
-
-        # Redefinir o índice do DataFrame para evitar ambiguidade
-        video_prediction = detector.detect_video(video_path, data_type="video", skip_frames=20)
-
-        # Exibir o vídeo
-        display(Video(video_path, embed=True))
-
-        # Exibir resultados
-        print(video_prediction.head())
-    
-
-        # Plotar emoções ao longo do vídeo
+       
+        # Plotar as emoções detectadas
         plt.figure(figsize=(15, 10))
-        axes = video_prediction.emotions.plot(title="Emotions throughout the video")
-        plt.show()
-
-        # Exibir as emoções detectadas ao longo do vídeo
-        plt.figure(figsize=(15, 10))
-        video_prediction.emotions.plot(title="Emotions throughout the video")
+        video_prediction.emotions.plot(title="Detected Emotions")
         plt.xlabel("Frames")
         plt.ylabel("Emotion Intensity")
         plt.legend(loc="upper right")
         plt.show()
-
-        # Visualizar detecções no vídeo
-        figs = video_prediction.plot_detections(poses=True)
-        plt.show()
-
-        # Loop imprimir frames com AUs > 0.8 para cada emoção
+        
+        # Loop para processar emoções 
         for emotion in video_prediction.emotions.columns:
             filtered_frames = video_prediction[video_prediction.emotions[emotion] > 0.8]
 
             if not filtered_frames.empty:
                 print(f"Frames with {emotion} > 0.8:")
-                print(filtered_frames[['frame', emotion]])  # Display the frames and the emotion value
+                print(filtered_frames[['frame', emotion, 'label']])  # Inclui a label no print
 
-                # Exibir os frames filtrados
-                max_frames_to_process = 5  # Limitar o número de frames processados
-                for i, frame_number in enumerate(filtered_frames['frame']):
-                    if i >= max_frames_to_process:
-                        print("Frame processing limit reached.")
-                        break
-                    # Verificar se o frame está dentro do alcance do vídeo
-                    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-                    if frame_number >= total_frames:
-                        print(f"{frame_number} is out of video range.")
-                        continue
+                # Exibir os frames correspondentes
+                for frame_number in filtered_frames['frame']:
                     # Configurar o vídeo para o frame específico
                     cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
                     ret, frame = cap.read()
                     if not ret:
-                        print(f"The frame {frame_number} was not captured.")
+                        print(f"Could not read frame {frame_number}.")
                         continue
-                    # Converter o frame de BGR para RGB (para exibição com matplotlib)
+
+                    # Converter o frame de BGR para RGB para exibição
                     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    # Exibir o frame como imagem.
-                    plt.figure(figsize=(20, 16))
+
+                    # Exibir o frame
+                    plt.figure(figsize=(10, 6))
                     plt.imshow(frame_rgb)
                     plt.title(f"Frame {frame_number} - {emotion} > 0.8")
                     plt.axis('off')
-                    plt.pause(0.001)  # Exibir sem bloquear o loop
-                    plt.close('all')  # Fechar a figura para liberar memória
+                    plt.show()
             else:
                 print(f"No frame had {emotion} > 0.8.")
+
         # Libertar o vídeo
         cap.release()
-        
-        output_csv_path = os.path.join(output_data_dir, "output.csv")
-        prediction.to_csv(output_csv_path, index=False)
+
+        # Guardar a saída em um arquivo CSV
+        output_csv_path = os.path.join(data_dir, "video_output.csv")
+        video_prediction.to_csv(output_csv_path, index=False)
+        #video_prediction = read_feat(data_csv_path)
+        print(f"Output CSV saved to {output_csv_path} and added to input data directory.")
 
 # Tempo de processamento de imagem e video
 time2 = time.perf_counter()
-print(f"Processing time for image and videos: {time2 - time1} seconds")
+print(f"Processing time: {time2 - time1} seconds")
 
