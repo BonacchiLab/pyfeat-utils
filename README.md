@@ -29,7 +29,7 @@ uv pip install -r .\requirements-dev.txt
 ```
 
 If you see no errors, the installation was successful.
----
+
 
 **Note:**  
     The first time the Detector is imported it may take a while to load the model. This is normal.
@@ -39,8 +39,8 @@ If you see no errors, the installation was successful.
 To use this repository, follow these steps:
 
 1. **Prepare your data**  
-   Place all the files you want to process (images, videos, CSVs, TXTs, etc.) inside the `input_data` folder located in the root of the repository.  
-   Supported formats include images (`.jpg`, `.jpeg`, `.png`), videos (`.mp4`, `.avi`, `.mov`), and tabular data (`.csv`, `.txt`).
+   Place all the files you want to process (images, videos, etc.) inside the `input_data` folder located in the root of the repository.  
+   Supported formats include images (`.jpg`, `.jpeg`, `.png`), videos (`.mp4`, `.avi`, `.mov`).
 
 2. **Configure processing options (optional)**  
    If needed, edit the `template_config.json` file to adjust the input folder path or processing options (such as which data types to process).
