@@ -1,7 +1,15 @@
+[![PyPI](https://img.shields.io/pypi/v/py-feat.svg)](https://pypi.org/project/py-feat/)
+[![Python Versions](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue)]()
+[![Based on py-feat](https://img.shields.io/badge/Based%20on-py--feat-006d44)](https://py-feat.org/pages/intro.html)
+
+
+
 # pyfeat-utils
 
 This repo will implements a CLI interface to a bunch of utils for tunning the py-feat library (pfu for py-feat utils).
 The main goal is to make it easier to use the library and to provide a way to process bulk data and perform standardized analyses.
+
+For more info about the library, visit https://py-feat.org/pages/intro.html 
 
 ## Installation
 
