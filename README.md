@@ -1,4 +1,3 @@
-[![PyPI](https://img.shields.io/pypi/v/py-feat.svg)](https://pypi.org/project/py-feat/)
 [![Python Versions](https://img.shields.io/badge/python-3.9-blue)]()
 [![Based on py-feat](https://img.shields.io/badge/Based%20on-py--feat-006d44)](https://py-feat.org/pages/intro.html)
 
