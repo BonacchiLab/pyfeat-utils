@@ -18,13 +18,6 @@ time1 = time.perf_counter()
 # PyFeat detector
 detector = Detector()
 
-# Path
-data_dir = os.path.join(os.path.dirname(__file__), "input_data")
-
-# Check if the folder exists
-if not os.path.exists(data_dir):
-    raise FileNotFoundError(f"'input_data' was not {data_dir}")
-
 # Relative path to the template_config.json file
 config_path = os.path.join(os.path.dirname(__file__), "template_config.json")
 if not os.path.exists(config_path):
@@ -34,10 +27,17 @@ if not os.path.exists(config_path):
 with open(config_path, "r") as config_file:
     config = json.load(config_file)
 
+# Use the data_pyfeat-utils path from the config file (outside the repo)
+data_dir = os.path.expanduser(config["data_processing"]["data_pyfeat-utils"])
+
+# Check if the folder exists
+if not os.path.exists(data_dir):
+    raise FileNotFoundError(f"'data_pyfeat-utils' was not found at {data_dir}")
+
 # Determine if the script should process images, videos, or both
 process_types = config["data_processing"].get("process_type", ["image", "video"])
 
-# Get all files in the input_data folder
+# Get all files in the data_pyfeat-utils folder
 input_files = glob(os.path.join(data_dir, "*"))
 
 # Process images
@@ -65,7 +65,7 @@ if "image" in process_types:
         # Save the output to a CSV file
         output_csv_path = os.path.join(data_dir, "output.csv")
         prediction.to_csv(output_csv_path, index=False)
-        print(f"Output CSV saved to {output_csv_path} and added to input data directory.")
+        print(f"Output CSV saved to {output_csv_path} and added to data_pyfeat-utils directory.")
 
 # Process videos
 if "video" in process_types:
@@ -133,8 +133,7 @@ if "video" in process_types:
         # Save the output to a CSV file
         output_csv_path = os.path.join(data_dir, "video_output.csv")
         video_prediction.to_csv(output_csv_path, index=False)
-        #video_prediction = read_feat(data_csv_path)
-        print(f"Output CSV saved to {output_csv_path} and added to input data directory.")
+        print(f"Output CSV saved to {output_csv_path} and added to data_pyfeat-utils directory.")
 
 # Processing time for image and video
 time2 = time.perf_counter()

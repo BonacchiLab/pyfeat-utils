@@ -21,6 +21,8 @@ with open(template_config_path, "r") as template_config_file:
     template_config = json.load(template_config_file)
 
 # Create the input and output folders from the loaded template_config.json file
+input_folder = pyfeat_utils_dir / template_config["data_pyfeat-utils"]
+input_folder.mkdir(parents=True, exist_ok=True)
 
 
 # Copy the template_config.json file to the root folder define absolute paths insted of user home
