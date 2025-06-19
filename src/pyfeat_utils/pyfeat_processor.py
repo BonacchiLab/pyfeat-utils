@@ -62,8 +62,9 @@ if "image" in process_types:
         figs = prediction.plot_detections(poses=True)
         plt.show()
 
-        # Save the output to a CSV file
-        output_csv_path = os.path.join(data_dir, "output.csv")
+        # Save the output to a CSV file with the original file name but .csv extension
+        base_name = os.path.splitext(os.path.basename(image_path))[0]
+        output_csv_path = os.path.join(data_dir, f"{base_name}.csv")
         prediction.to_csv(output_csv_path, index=False)
         print(f"Output CSV saved to {output_csv_path} and added to data_pyfeat-utils directory.")
 
@@ -130,8 +131,9 @@ if "video" in process_types:
         # Release the video
         cap.release()
 
-        # Save the output to a CSV file
-        output_csv_path = os.path.join(data_dir, "video_output.csv")
+        # Save the output to a CSV file with the original file name but .csv extension
+        base_name = os.path.splitext(os.path.basename(video_path))[0]
+        output_csv_path = os.path.join(data_dir, f"{base_name}.csv")
         video_prediction.to_csv(output_csv_path, index=False)
         print(f"Output CSV saved to {output_csv_path} and added to data_pyfeat-utils directory.")
 
