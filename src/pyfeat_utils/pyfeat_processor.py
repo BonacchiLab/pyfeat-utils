@@ -12,6 +12,9 @@ from IPython.display import display
 import time
 import pandas as pd
 
+# Ask user if they want to visualize the outputs as they are processed
+visualize_outputs = input("Do you want to visualize the outputs as they are processed? (yes/no): ").strip().lower()
+
 # Start timer
 time1 = time.perf_counter()
 
@@ -52,15 +55,16 @@ if "image" in process_types:
         prediction = detector.detect_image(image_path, data_type="image")
 
         # Show results
-        print(prediction.head())
-        print(prediction.aus)  # Action Units
-        print(prediction.emotions)  # Emotions
-        print(prediction.poses)  # Head pose
-        print(prediction.identities)  # Identities
-
-        # Plot detections with poses
-        figs = prediction.plot_detections(poses=True)
-        plt.show()
+        if visualize_outputs == "yes":
+            print(prediction.head())
+            print(prediction.aus)  # Action Units
+            print(prediction.emotions)  # Emotions
+            print(prediction.poses)  # Head pose
+            print(prediction.identities)  # Identities
+             # Plot detections with poses
+            
+            figs = prediction.plot_detections(poses=True)
+            plt.show()
 
         # Save the output to a CSV file with the original file name but .csv extension
         base_name = os.path.splitext(os.path.basename(image_path))[0]
@@ -80,56 +84,55 @@ if "video" in process_types:
         # Add a label column for detected faces
         video_prediction['label'] = video_prediction.index.map(lambda x: f"Face_{x}")
 
-        # Show the first lines of the prediction DataFrame
-        print(video_prediction.head())
+        if visualize_outputs == "yes":
+            # Check if the video was opened correctly
+            if not cap.isOpened():
+                print(f"Could not open the video: {video_path}")
+                continue
 
-        # Open the video with OpenCV
-        cap = cv2.VideoCapture(video_path)
+            # Plot detected emotions
+            plt.figure(figsize=(15, 10))
+            video_prediction.emotions.plot(title="Detected Emotions")
+            plt.xlabel("Frames")
+            plt.ylabel("Emotion Intensity")
+            plt.legend(loc="upper right")
+            plt.show()
+            
+            # Loop to process emotions
+            for emotion in video_prediction.emotions.columns:
+                filtered_frames = video_prediction[video_prediction.emotions[emotion] > 0.8]
 
-        # Check if the video was opened correctly
-        if not cap.isOpened():
-            print(f"Could not open the video: {video_path}")
-            continue
-       
-        # Plot detected emotions
-        plt.figure(figsize=(15, 10))
-        video_prediction.emotions.plot(title="Detected Emotions")
-        plt.xlabel("Frames")
-        plt.ylabel("Emotion Intensity")
-        plt.legend(loc="upper right")
-        plt.show()
-        
-        # Loop to process emotions
-        for emotion in video_prediction.emotions.columns:
-            filtered_frames = video_prediction[video_prediction.emotions[emotion] > 0.8]
+                if not filtered_frames.empty:
+                    print(f"Frames with {emotion} > 0.8:")
+                    print(filtered_frames[['frame', emotion, 'label']])  # Includes the label in the print
 
-            if not filtered_frames.empty:
-                print(f"Frames with {emotion} > 0.8:")
-                print(filtered_frames[['frame', emotion, 'label']])  # Includes the label in the print
+                    # Show the corresponding frames
+                    for frame_number in filtered_frames['frame']:
+                        # Set the video to the specific frame
+                        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
+                        ret, frame = cap.read()
+                        if not ret:
+                            print(f"Could not read frame {frame_number}.")
+                            continue
 
-                # Show the corresponding frames
-                for frame_number in filtered_frames['frame']:
-                    # Set the video to the specific frame
-                    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
-                    ret, frame = cap.read()
-                    if not ret:
-                        print(f"Could not read frame {frame_number}.")
-                        continue
+                        # Convert the frame from BGR to RGB for display
+                        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-                    # Convert the frame from BGR to RGB for display
-                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        # Show the frame
+                        plt.figure(figsize=(10, 6))
+                        plt.imshow(frame_rgb)
+                        plt.title(f"Frame {frame_number} - {emotion} > 0.8")
+                        plt.axis('off')
+                        plt.show()
+                else:
+                    print(f"No frame had {emotion} > 0.8.")
 
-                    # Show the frame
-                    plt.figure(figsize=(10, 6))
-                    plt.imshow(frame_rgb)
-                    plt.title(f"Frame {frame_number} - {emotion} > 0.8")
-                    plt.axis('off')
-                    plt.show()
-            else:
-                print(f"No frame had {emotion} > 0.8.")
-
-        # Release the video
-        cap.release()
+            # Release the video
+            cap.release()
+        else:
+            # If not visualizing, just release the video if it was opened
+            if cap.isOpened():
+                cap.release()
 
         # Save the output to a CSV file with the original file name but .csv extension
         base_name = os.path.splitext(os.path.basename(video_path))[0]
