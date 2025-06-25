@@ -2,3 +2,4 @@ py-feat
 pytest
 ruff
 ipykernel
+numpy
