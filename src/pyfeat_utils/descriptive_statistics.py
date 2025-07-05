@@ -128,8 +128,38 @@ def main():
     plt.xlabel("Emotion")
     plt.tight_layout()
     plt.show()
-    
-    
+
+    # Detect AU columns (e.g., AU01, AU02, ..., AU66)
+    au_columns = [col for col in df.columns if col.startswith("AU") and pd.api.types.is_numeric_dtype(df[col])]
+    if au_columns:
+        print("\n=== Mean, Median, and Quartiles for Each AU ===")
+        for au in au_columns:
+            print(f"{au}: mean={df[au].mean():.3f}, median={df[au].median():.3f}, Q1={df[au].quantile(0.25):.3f}, Q3={df[au].quantile(0.75):.3f}")
+
+        # Boxplot for each AU
+        plt.figure(figsize=(max(10, len(au_columns) // 2), 6))
+        sns.boxplot(data=df[au_columns], palette="coolwarm")
+        plt.title("Boxplot of AU Levels")
+        plt.ylabel("Level")
+        plt.xlabel("AU")
+        plt.tight_layout()
+        plt.show()
+
+        # Barplot for mean and median of each AU
+        au_means = df[au_columns].mean()
+        au_medians = df[au_columns].median()
+        au_stats_df = pd.DataFrame({'mean': au_means, 'median': au_medians})
+
+        au_stats_df.plot(kind='bar', figsize=(max(10, len(au_columns) // 2), 5))
+        plt.title("Mean and Median for Each AU")
+        plt.ylabel("Value")
+        plt.xlabel("AU")
+        plt.tight_layout()
+        plt.show()
+    else:
+        print("\nNo AU columns found in the files.")
+
+
 if __name__ == "__main__":
     main()
 
