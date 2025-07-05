@@ -78,25 +78,25 @@ def main():
     print(f"Total rows: {len(df)}")
     print(f"Emotion columns: {emotion_columns}")
 
-    # Emoção mais comum
+    # Most common emotion
     most_common, emotion_counts = get_most_common_emotion(df, emotion_columns)
     print(f"Most common emotion: {most_common}")
     print("Emotion distribution:")
     print(emotion_counts)
 
-    # Média geral do nível das emoções mais encontradas
+    # Mean level of the most common emotion(s)
     print("\n=== Mean Level of Most Common Emotion(s) ===")
-    # Se quiser considerar só a mais comum:
     mask = df[emotion_columns].idxmax(axis=1) == most_common
     mean_level = df.loc[mask, most_common].mean()
     print(f"Mean level for '{most_common}' (when it is the highest): {mean_level:.3f}")
 
-   
-
-    # Mediana, média e quartis para cada emoção
-    print("\n=== Median, Mean, and Quartiles for Each Emotion ===")
+    # Median, mean, and quartiles for each emotion
+    print("\n=== Mean, Median, and Quartiles for Each Emotion ===")
     for emotion in emotion_columns:
-        print(f"{emotion}: median={df[emotion].median():.3f}, mean={df[emotion].mean():.3f}, Q1={df[emotion].quantile(0.25):.3f}, Q3={df[emotion].quantile(0.75):.3f}")
+        print(f"{emotion}: mean={df[emotion].mean():.3f}, median={df[emotion].median():.3f}, Q1={df[emotion].quantile(0.25):.3f}, Q3={df[emotion].quantile(0.75):.3f}")
+
+
+## PLOTS ##
 
     # Plot emotion distribution
     plt.figure(figsize=(8, 5))
@@ -107,13 +107,6 @@ def main():
     plt.tight_layout()
     plt.show()
 
-    # Plot mean level for the most common emotion
-    plt.figure(figsize=(4, 5))
-    plt.bar([most_common], [mean_level], color="orange")
-    plt.title(f"Mean Level for '{most_common}' (when it is the highest)")
-    plt.ylabel("Mean Level")
-    plt.tight_layout()
-    plt.show()
 
     # Boxplot for each emotion
     plt.figure(figsize=(10, 6))
@@ -135,11 +128,12 @@ def main():
     plt.xlabel("Emotion")
     plt.tight_layout()
     plt.show()
+    
+    
 if __name__ == "__main__":
     main()
 
 
-
-# Tempo de processamento
+# Processing time
 time2 = time.perf_counter()
 print(f"Processing time: {time2 - time1} seconds")
