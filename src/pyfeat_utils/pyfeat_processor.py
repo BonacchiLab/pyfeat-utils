@@ -110,27 +110,6 @@ if __name__ == "__main__":
                 if not cap.isOpened():
                     print(f"Could not open the video: {video_path}")
                     continue
-
-                # Plot detected emotions for each identity if available
-                if hasattr(video_prediction, "identities") and video_prediction.identities is not None:
-                    for i, identity in enumerate(video_prediction.identities):
-                        plt.figure(figsize=(15, 10))
-                        # If emotions is a list of DataFrames (one per identity)
-                        if isinstance(video_prediction.emotions, list):
-                            video_prediction.emotions[i].plot(title=f"Detected Emotions - Identity: {identity}")
-                        else:
-                            video_prediction.emotions.plot(title=f"Detected Emotions - Identity: {identity}")
-                        plt.xlabel("Frames")
-                        plt.ylabel("Emotion Intensity")
-                        plt.legend(loc="upper right")
-                        plt.show()
-                else:
-                    plt.figure(figsize=(15, 10))
-                    video_prediction.emotions.plot(title="Detected Emotions")
-                    plt.xlabel("Frames")
-                    plt.ylabel("Emotion Intensity")
-                    plt.legend(loc="upper right")
-                    plt.show()
                 
                 # Loop to process emotions
                 for emotion in video_prediction.emotions.columns:
