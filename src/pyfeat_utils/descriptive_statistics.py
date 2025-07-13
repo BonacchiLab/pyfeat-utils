@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Start timer
-time1 = time.perf_counter()
+start_time = time.perf_counter()
 
 # Path to config
 config_path = os.path.join(os.path.dirname(__file__), "template_config.json")
@@ -56,6 +56,7 @@ def load_files_from_dir(directory, extensions=(".csv", ".txt")):
     else:
         return pd.DataFrame()
 
+
 def get_most_common_emotion(df, emotion_columns):
     most_common = df[emotion_columns].idxmax(axis=1)
     return most_common.value_counts().idxmax(), most_common.value_counts()
@@ -64,6 +65,14 @@ def main():
     # Load all CSV and TXT files from the directory defined in the JSON
     files_to_analyze = [os.path.join(data_dir, f) for f in os.listdir(data_dir)
                         if f.lower().endswith((".csv", ".txt"))]
+    
+    # Ignore CSVs that contain video extensions in the name
+    video_exts = (".jpg", ".png", ".jpeg")
+    files_to_analyze = [
+        f for f in files_to_analyze
+        if not any(ext in os.path.basename(f).lower() for ext in video_exts)
+    ]
+
     if not files_to_analyze:
         print("No CSV or TXT files found or files are empty.")
         return
@@ -72,41 +81,38 @@ def main():
     for f in files_to_analyze:
         print(f"  - {os.path.basename(f)}")
 
-    df = load_files_from_dir(data_dir, extensions=(".csv", ".txt"))
-    if df.empty:
-        print("No CSV or TXT files found or files are empty.")
-        return
+    for file_path in files_to_analyze:
+        print(f"\n=== Statistics for file: {os.path.basename(file_path)} ===")
+        df = load_files_from_dir(os.path.dirname(file_path), extensions=(os.path.splitext(file_path)[1],))
+        # Filter only the current file
+        df = df[df.columns.intersection(pd.read_csv(file_path, nrows=0).columns)]
+        if df.empty:
+            print("File is empty or could not be read.")
+            continue
 
-    # Detect numeric emotion columns
-    possible_emotions = ["anger", "disgust", "fear", "happiness", "sadness", "surprise", "neutral"]
-    emotion_columns = [col for col in df.columns if col in possible_emotions and pd.api.types.is_numeric_dtype(df[col])]
-    if not emotion_columns:
-        print("No numeric emotion columns found in the files.")
-        return
+        possible_emotions = ["anger", "disgust", "fear", "happiness", "sadness", "surprise", "neutral"]
+        emotion_columns = [col for col in df.columns if col in possible_emotions and pd.api.types.is_numeric_dtype(df[col])]
+        if not emotion_columns:
+            print("No numeric emotion columns found in the file.")
+            continue
 
-    print("=== General Statistics ===")
-    print(f"Total rows: {len(df)}")
-    print(f"Emotion columns: {emotion_columns}")
+        print(f"Total rows: {len(df)}")
+        print(f"Emotion columns: {emotion_columns}")
 
-    # Most common emotion
-    most_common, emotion_counts = get_most_common_emotion(df, emotion_columns)
-    print(f"Most common emotion: {most_common}")
-    print("Emotion distribution:")
-    print(emotion_counts)
+        most_common, emotion_counts = get_most_common_emotion(df, emotion_columns)
+        print(f"Most common emotion: {most_common}")
+        print("Emotion distribution:")
+        print(emotion_counts)
 
-    # Mean level of the most common emotion(s)
-    print("\n=== Mean Level of Most Common Emotion(s) ===")
-    mask = df[emotion_columns].idxmax(axis=1) == most_common
-    mean_level = df.loc[mask, most_common].mean()
-    print(f"Mean level for '{most_common}' (when it is the highest): {mean_level:.3f}")
+        print("\n=== Mean Level of Most Common Emotion(s) ===")
+        mask = df[emotion_columns].idxmax(axis=1) == most_common
+        mean_level = df.loc[mask, most_common].mean()
+        print(f"Mean level for '{most_common}' (when it is the highest): {mean_level:.3f}")
 
-    # Median, mean, and quartiles for each emotion
-    print("\n=== Mean, Median, and Quartiles for Each Emotion ===")
-    for emotion in emotion_columns:
-        print(f"{emotion}: mean={df[emotion].mean():.3f}, median={df[emotion].median():.3f}, Q1={df[emotion].quantile(0.25):.3f}, Q3={df[emotion].quantile(0.75):.3f}")
+        print("\n=== Mean, Median, and Quartiles for Each Emotion ===")
+        for emotion in emotion_columns:
+            print(f"{emotion}: mean={df[emotion].mean():.3f}, median={df[emotion].median():.3f}, Q1={df[emotion].quantile(0.25):.3f}, Q3={df[emotion].quantile(0.75):.3f}")
 
-    # Check for 'frame' column to determine times when emotions are most present
-    if "frame" in df.columns:
         print("\n=== Times/Frames Where Each Emotion Was Most Present ===")
         for emotion in emotion_columns:
             max_val = df[emotion].max()
@@ -114,71 +120,65 @@ def main():
             for _, row in max_rows.iterrows():
                 frame = row["frame"]
                 print(f"Emotion '{emotion}' most present at frame {frame} (value={max_val:.3f})")
-    else:
-        print("\nNo 'frame' column found in the data; cannot determine times for emotions.")
 
-## PLOTS ##
+        # AU columns
+        au_columns = [col for col in df.columns if col.startswith("AU") and pd.api.types.is_numeric_dtype(df[col])]
+        if au_columns:
+            print("\n=== Mean, Median, and Quartiles for Each AU ===")
+            for au in au_columns:
+                print(f"{au}: mean={df[au].mean():.3f}, median={df[au].median():.3f}, Q1={df[au].quantile(0.25):.3f}, Q3={df[au].quantile(0.75):.3f}")
+        else:
+            print("\nNo AU columns found in the file.")
 
-    # Plot emotion distribution
-    plt.figure(figsize=(8, 5))
-    sns.barplot(x=emotion_counts.index, y=emotion_counts.values, palette="viridis")
-    plt.title("Emotion Distribution (Most Common per Row)")
-    plt.ylabel("Count")
-    plt.xlabel("Emotion")
-    plt.tight_layout()
-    plt.show()
+        #PLOTS 
+        if emotion_columns:
+            plt.figure(figsize=(8, 5))
+            sns.barplot(x=emotion_counts.index, y=emotion_counts.values, palette="viridis")
+            plt.title(f"Emotion Distribution (Most Common per Row) - {os.path.basename(file_path)}")
+            plt.ylabel("Count")
+            plt.xlabel("Emotion")
+            plt.tight_layout()
+            plt.show()
 
+            plt.figure(figsize=(10, 6))
+            sns.boxplot(data=df[emotion_columns], palette="Set2")
+            plt.title(f"Boxplot of Emotion Levels - {os.path.basename(file_path)}")
+            plt.ylabel("Level")
+            plt.xlabel("Emotion")
+            plt.tight_layout()
+            plt.show()
 
-    # Boxplot for each emotion
-    plt.figure(figsize=(10, 6))
-    sns.boxplot(data=df[emotion_columns], palette="Set2")
-    plt.title("Boxplot of Emotion Levels")
-    plt.ylabel("Level")
-    plt.xlabel("Emotion")
-    plt.tight_layout()
-    plt.show()
+            means = df[emotion_columns].mean()
+            medians = df[emotion_columns].median()
+            stats_df = pd.DataFrame({'mean': means, 'median': medians})
+            stats_df.plot(kind='bar', figsize=(10, 5))
+            plt.title(f"Mean and Median for Each Emotion - {os.path.basename(file_path)}")
+            plt.ylabel("Value")
+            plt.xlabel("Emotion")
+            plt.tight_layout()
+            plt.show()
 
-    # Barplot for mean and median of each emotion
-    means = df[emotion_columns].mean()
-    medians = df[emotion_columns].median()
-    stats_df = pd.DataFrame({'mean': means, 'median': medians})
+        if au_columns:
+            plt.figure(figsize=(max(10, len(au_columns) // 2), 6))
+            sns.boxplot(data=df[au_columns], palette="coolwarm")
+            plt.title(f"Boxplot of AU Levels - {os.path.basename(file_path)}")
+            plt.ylabel("Level")
+            plt.xlabel("AU")
+            plt.tight_layout()
+            plt.show()
 
-    stats_df.plot(kind='bar', figsize=(10, 5))
-    plt.title("Mean and Median for Each Emotion")
-    plt.ylabel("Value")
-    plt.xlabel("Emotion")
-    plt.tight_layout()
-    plt.show()
+            au_means = df[au_columns].mean()
+            au_medians = df[au_columns].median()
+            au_stats_df = pd.DataFrame({'mean': au_means, 'median': au_medians})
+            au_stats_df.plot(kind='bar', figsize=(max(10, len(au_columns) // 2), 5))
+            plt.title(f"Mean and Median for Each AU - {os.path.basename(file_path)}")
+            plt.ylabel("Value")
+            plt.xlabel("AU")
+            plt.tight_layout()
+            plt.show()
+      
 
-    # Detect AU columns (e.g., AU01, AU02, ..., AU66)
-    au_columns = [col for col in df.columns if col.startswith("AU") and pd.api.types.is_numeric_dtype(df[col])]
-    if au_columns:
-        print("\n=== Mean, Median, and Quartiles for Each AU ===")
-        for au in au_columns:
-            print(f"{au}: mean={df[au].mean():.3f}, median={df[au].median():.3f}, Q1={df[au].quantile(0.25):.3f}, Q3={df[au].quantile(0.75):.3f}")
-
-        # Boxplot for each AU
-        plt.figure(figsize=(max(10, len(au_columns) // 2), 6))
-        sns.boxplot(data=df[au_columns], palette="coolwarm")
-        plt.title("Boxplot of AU Levels")
-        plt.ylabel("Level")
-        plt.xlabel("AU")
-        plt.tight_layout()
-        plt.show()
-
-        # Barplot for mean and median of each AU
-        au_means = df[au_columns].mean()
-        au_medians = df[au_columns].median()
-        au_stats_df = pd.DataFrame({'mean': au_means, 'median': au_medians})
-
-        au_stats_df.plot(kind='bar', figsize=(max(10, len(au_columns) // 2), 5))
-        plt.title("Mean and Median for Each AU")
-        plt.ylabel("Value")
-        plt.xlabel("AU")
-        plt.tight_layout()
-        plt.show()
-    else:
-        print("\nNo AU columns found in the files.")
+   
 
 
 if __name__ == "__main__":
@@ -186,5 +186,5 @@ if __name__ == "__main__":
 
 
 # Processing time
-time2 = time.perf_counter()
-print(f"Processing time: {time2 - time1} seconds")
+end_time = time.perf_counter()
+print(f"Processing time: {end_time - start_time} seconds")
