@@ -12,23 +12,21 @@ from IPython.display import display
 import time
 import pandas as pd
 
-# PyFeat detector (global, so functions can use it)
+# Start timer
+time1 = time.perf_counter()
+
+# PyFeat detector 
 detector = Detector()
 
 def get_image_prediction(image_path):
-    """Returns the prediction DataFrame for a given image path."""
     return detector.detect_image(image_path, data_type="image")
 
 def get_video_prediction(video_path):
-    """Returns the prediction DataFrame for a given video path."""
     return detector.detect_video(video_path, data_type="video", skip_frames=20)
 
 if __name__ == "__main__":
     # Ask user if they want to visualize the outputs as they are processed
     visualize_outputs = input("Do you want to visualize the outputs as they are processed? (yes/no): ").strip().lower()
-
-    # Start timer
-    time1 = time.perf_counter()
 
     # Relative path to the template_config.json file
     config_path = os.path.join(os.path.dirname(__file__), "template_config.json")
@@ -81,11 +79,11 @@ if __name__ == "__main__":
                         plt.show()
                 else:
                     plt.show()
-            # Save the output to a CSV file with the original file name but .csv extension
-            base_name = os.path.splitext(os.path.basename(image_path))[0]
+            # Salvar o output para um arquivo CSV com a extensão original do arquivo
+            base_name = os.path.basename(image_path)
             output_csv_path = os.path.join(data_dir, f"{base_name}.csv")
             prediction.to_csv(output_csv_path, index=False)
-            print(f"Output CSV saved to {output_csv_path} and added to data_pyfeat-utils directory.")
+            print(f"Output CSV salvo em {output_csv_path} e adicionado ao diretório data_pyfeat-utils.")
 
     # Process videos
     if "video" in process_types:
@@ -154,11 +152,11 @@ if __name__ == "__main__":
                 if 'cap' in locals() and cap.isOpened():
                     cap.release()
 
-            # Save the output to a CSV file with the original file name but .csv extension
-            base_name = os.path.splitext(os.path.basename(video_path))[0]
+            # Salvar o output para um arquivo CSV com a extensão original do arquivo
+            base_name = os.path.basename(video_path)
             output_csv_path = os.path.join(data_dir, f"{base_name}.csv")
             video_prediction.to_csv(output_csv_path, index=False)
-            print(f"Output CSV saved to {output_csv_path} and added to data_pyfeat-utils directory.")
+            print(f"Output CSV salvo em {output_csv_path} e adicionado ao diretório data_pyfeat-utils.")
 
     # Processing time for image and video
     time2 = time.perf_counter()
