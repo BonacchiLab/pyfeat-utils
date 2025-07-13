@@ -1,0 +1,57 @@
+AU1,Inner Brow Raiser,Frontalis (medial)
+AU2,Outer Brow Raiser,Frontalis (lateral)
+AU3,Inner corner Brow Tightener,Procerus, Depressor Supercilii, Corrugator Supercilii
+AU4,Brow Lowerer,Procerus, Depressor Supercilii, Corrugator Supercilii
+AU5,Upper Lid Raiser,Levator Palpebrae Superioris, Superior Tarsal Muscle
+AU6,Cheek Raiser,Orbicularis Oculi (orbital)
+AU7,Lid Tightener,Orbicularis Oculi (palpebral)
+AU8,Lips Toward Each Other,Orbicularis Oris
+AU9,Nose Wrinkler,Levator Labii Superioris Alaeque Nasi
+AU10,Upper Lip Raiser,Levator Labii Superioris
+AU11,Nasolabial Deepener,Zygomaticus Minor
+AU12,Lip Corner Puller,Zygomaticus Major
+AU13,Sharp Lip Puller,Levator Anguli Oris/Caninus
+AU14,Dimpler,Buccinator
+AU15,Lip Corner Depressor,Depressor Anguli Oris
+AU16,Lower Lip Depressor,Depressor Labii Inferioris
+AU17,Chin Raiser,Mentalis
+AU18,Lip Pucker,Incisvii Labii Superioris, Incisvii Labii Inferioris
+AU19,Tongue Show,Genioglossus, Medial Pterygoid, Masseter
+AU20,Lip Stretcher,Risorius, Platysma
+AU21,Neck Tightener,Platysma
+AU22,Lip Funneler,Orbicularis Oris
+AU23,Lip Tightener,Orbicularis Oris
+AU24,Lip Pressor,Orbicularis Oris
+AU25,Lip Part,Depressor Labii Inferioris
+AU26,Jaw Drop,Masseter, Temporalis, Medial Pterygoid
+AU27,Mouth Stretch,Pterygoids, Digastric
+AU28,Lip Suck,Orbicularis Oris
+AU29,Jaw Thrust,Pterygoids, Masseter
+AU30,Jaw Sideways,Pterygoids, Masseter, Temporalis
+AU31,Jaw Clencher,Masseter
+AU32,Lip Bite,Masseter
+AU33,Cheek Blow,Buccinator, Orbicularis Oris, Mentalis
+AU34,Cheek Puff,Buccinator, Orbicularis Oris, Mentalis, Depressor Depti Nasi
+AU35,Cheek Suck,Buccinator
+AU37,Lip Wipe,Pterygoids, Masseter, Genioglossus
+AU38,Nostril Dilator,Nasalis (alaris), Dilator Naris Anterior, Depressor Septi Nasi
+AU39,Nostril Compressor,Nasalis (transverse), Compressor Narium Minor
+AU40,Sniff,
+AU41,Lid Drop,Levator Palpebrae Superioris (relaxation)
+AU42,Slit,Depressor Supercilii
+AU43,Eyes Closed,Levator Palebrae Superioris (relaxation)
+AU44,Squint,Corrugator Supercilii
+AU45,Blink,Levator Palebrae Superioris (relaxation), Orbicularis Oculi (contraction)
+AU46,Wink,Orbicularis Oculi
+AU51,Head turn left
+AU52,Head turn right
+AU53,Head up
+AU54,Head down
+AU55,Head tilt left
+AU56,Head tilt right
+AU57,Head forward
+AU58,Head backward
+AU61,Eyes turn left,Medial Rectus (right eye), Lateral Rectus (left eye)
+AU62,Eyes turn right,Medial Rectus (left eye), Lateral Rectus (right eye)
+AU63,Eyes up,Superior Rectus, Inferior Oblique
+AU64,Eyes down,Inferior Rectus, Superior Oblique
