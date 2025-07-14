@@ -61,6 +61,17 @@ def get_most_common_emotion(df, emotion_columns):
     most_common = df[emotion_columns].idxmax(axis=1)
     return most_common.value_counts().idxmax(), most_common.value_counts()
 
+def load_au_translator(translator_path):
+    au_map = {}
+    with open(translator_path, encoding="utf-8") as f:
+        for line in f:
+            parts = [p.strip() for p in line.strip().split(",")]
+            if len(parts) >= 3:
+                au_code = parts[0]
+                muscle = parts[2]
+                au_map[au_code] = muscle
+    return au_map
+
 def main():
     # Load all CSV and TXT files from the directory defined in the JSON
     files_to_analyze = [os.path.join(data_dir, f) for f in os.listdir(data_dir)
@@ -80,6 +91,10 @@ def main():
     print("Files being analyzed:")
     for f in files_to_analyze:
         print(f"  - {os.path.basename(f)}")
+
+    # Load AU translator
+    translator_path = os.path.join(os.path.dirname(__file__), "AUs_translator.txt")
+    au_translator = load_au_translator(translator_path)
 
     for file_path in files_to_analyze:
         print(f"\n=== Statistics for file: {os.path.basename(file_path)} ===")
@@ -159,21 +174,27 @@ def main():
             plt.show()
 
         if au_columns:
+            # AU labels 
+            au_labels = [au_translator.get(au, au) for au in au_columns]
+
             plt.figure(figsize=(max(10, len(au_columns) // 2), 6))
-            sns.boxplot(data=df[au_columns], palette="coolwarm")
+            sns.boxplot(data=df[au_columns])
             plt.title(f"Boxplot of AU Levels - {os.path.basename(file_path)}")
             plt.ylabel("Level")
             plt.xlabel("AU")
+            plt.xticks(ticks=range(len(au_labels)), labels=au_labels, rotation=45, ha="right", fontsize=8)
             plt.tight_layout()
             plt.show()
 
             au_means = df[au_columns].mean()
             au_medians = df[au_columns].median()
             au_stats_df = pd.DataFrame({'mean': au_means, 'median': au_medians})
+            au_stats_df.index = [au_translator.get(au, au) for au in au_stats_df.index]
             au_stats_df.plot(kind='bar', figsize=(max(10, len(au_columns) // 2), 5))
             plt.title(f"Mean and Median for Each AU - {os.path.basename(file_path)}")
             plt.ylabel("Value")
             plt.xlabel("AU")
+            plt.xticks(ticks=range(len(au_labels)), labels=au_labels, rotation=45, ha="right", fontsize=8)
             plt.tight_layout()
             plt.show()
       
