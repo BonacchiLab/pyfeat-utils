@@ -8,7 +8,7 @@
 This repo will implements a CLI interface to a bunch of utils for tunning the py-feat library (pfu for py-feat utils).
 The main goal is to make it easier to use the library and to provide a way to process bulk data and perform standardized analyses.
 
-For more info about the library, visit https://py-feat.org/pages/intro.html 
+For more info about the library, visit [https://py-feat.org/pages/intro.htm](https://py-feat.org/)l 
 
 ## Installation
 
