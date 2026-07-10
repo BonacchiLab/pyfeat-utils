@@ -4,6 +4,8 @@ import argparse
 from pathlib import Path
 import sys
 
+from pyfeat_utils.config import ConfigError, load_config, write_default_config
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -34,11 +36,19 @@ def main(argv: list[str] | None = None) -> int:
     except SystemExit as exc:
         return int(exc.code or 0)
 
-    if args.command in {"process", "stats"} and not args.config.exists():
-        print(f"Config file not found: {args.config}", file=sys.stderr)
+    try:
+        if args.command == "init":
+            config_path = write_default_config(args.config, args.data_dir)
+            print(f"Created config: {config_path}")
+            return 0
+
+        config = load_config(args.config)
+    except ConfigError as exc:
+        print(str(exc), file=sys.stderr)
         return 2
 
-    if args.command == "init":
+    if args.command in {"process", "stats"}:
         return 0
 
-    return 0
+    parser.error(f"Unknown command: {args.command}")
+    return 2
