@@ -1,79 +1,103 @@
-[![Python Versions](https://img.shields.io/badge/python-3.9-blue)]()
-[![Based on py-feat](https://img.shields.io/badge/Based%20on-py--feat-006d44)](https://py-feat.org/pages/intro.html)
-
-
-
 # pyfeat-utils
 
-This repo will implements a CLI interface to a bunch of utils for tunning the py-feat library (pfu for py-feat utils).
-The main goal is to make it easier to use the library and to provide a way to process bulk data and perform standardized analyses.
+`pyfeat-utils` provides command-line utilities for batch py-feat processing of
+images and videos, plus descriptive summaries of generated facial emotion and
+Action Unit CSV outputs.
 
-For more info about the library, visit [https://py-feat.org/pages/intro.htm](https://py-feat.org/)l 
+## Requirements
+
+py-feat currently requires Python 3.11+. This repository develops against
+Python 3.13 via `.python-version`.
+
+The project uses `pyproject.toml` and `uv.lock` as the dependency source of
+truth. The lock uses `py-feat>=2.0.3` and uv overrides for `pandas>=2.2.3,<3`
+and `scikit-image>=0.25.2,<0.27` because `py-feat 2.0.3` still resolves older
+releases of those packages that do not ship usable Python 3.13 Windows wheels.
 
 ## Installation
 
-You can use uv to create a virtual environment and install the requirements.
-py-feat requires Python 3.9.
+Create or sync the project environment:
 
-```bash
-uv venv
-.\venv\Scripts\activate
-uv pip install -r .\requirements.txt
+```powershell
+uv sync
 ```
 
-To test the installation, run the following command:
+If uv fails because the global cache path is not usable on Windows, use a
+project-local cache:
 
-```bash
-python -c "from feat import Detector"
+```powershell
+$env:UV_CACHE_DIR = ".\.uv-cache"
+uv sync
 ```
-
-To install with dev tools, run the following command:
-
-```bash
-uv venv
-.\venv\Scripts\activate
-uv pip install -r .\requirements-dev.txt
-```
-
-If you see no errors, the installation was successful.
-
-
-**Note:**  
-    The first time the Detector is imported it may take a while to load the model. This is normal.
 
 ## Usage
 
-To use this repository, follow these steps:
+Create a starter config and data directory:
 
-1. **Prepare your data**  
-   Place all the files you want to process (images, videos, etc.) inside the `data_pyfeat-utils` folder that will be automatically created in your documents.  
-   Supported formats include images (`.jpg`, `.jpeg`, `.png`), videos (`.mp4`, `.avi`, `.mov`).
+```powershell
+uv run pyfeat-utils init
+```
 
-2. **Configure processing options (optional)**  
-   If needed, edit the `template_config.json` file to adjust the input folder path or processing options (such as which data types to process).
+By default this creates:
 
+```text
+~/Documents/pyfeat-utils/config.json
+~/Documents/pyfeat-utils/data/
+```
 
-3. **Run the processing script**  
-   To process your data run:
+Process configured image and video files:
 
-   ```bash
-   python -m pyfeat_utils.pyfeat_processor
-   ```
+```powershell
+uv run pyfeat-utils process --config "$HOME\Documents\pyfeat-utils\config.json"
+```
 
-   This will process all files in `data_pyfeat-utils` according to your configuration and save the results (such as predictions and statistics) in the same folder.
+Compute descriptive statistics from generated py-feat CSV/TXT outputs:
 
-4. **Generate descriptive statistics**  
-   This repo also has a script that generates descriptive statistics (mean, median, quartiles, most common emotion, etc.) from the processed data. For this option run:
+```powershell
+uv run pyfeat-utils stats --config "$HOME\Documents\pyfeat-utils\config.json"
+```
 
-   ```bash
-   python -m pyfeat_utils.descriptive_statistics
-   ```
+The statistics command writes `statistics_summary.csv` in the configured data
+directory.
 
-   This will read all processed CSVs in `data_pyfeat-utils` and output a summary file called `statistics_summary.csv` in the same folder.
+## Config
 
----
+The generated config uses this shape:
 
-**Note:**  
-- Make sure your virtual environment is activated before running the scripts.
-- The first time you run the scripts, model downloads may take a while.
-- All outputs and summaries will be saved in the `data_pyfeat-utils` folder for easy access.
+```json
+{
+  "data_processing": {
+    "data_dir": "C:\\Users\\you\\Documents\\pyfeat-utils\\data",
+    "process_types": ["image", "video"],
+    "video_skip_frames": 20
+  }
+}
+```
+
+Supported image formats are `.jpg`, `.jpeg`, and `.png`. Supported video
+formats are `.mp4`, `.avi`, and `.mov`.
+
+## Development
+
+Run the unit tests without forcing a full py-feat environment sync:
+
+```powershell
+$env:UV_CACHE_DIR = ".\.uv-cache"
+$env:PYTHONPATH = "src"
+uv run --no-project --with pytest --with pandas pytest -v
+```
+
+Run linting:
+
+```powershell
+uv run --with ruff ruff check
+```
+
+Full environment checks:
+
+```powershell
+$env:UV_CACHE_DIR = ".\.uv-cache"
+uv lock --check
+uv sync --dry-run
+uv run pyfeat-utils --help
+```

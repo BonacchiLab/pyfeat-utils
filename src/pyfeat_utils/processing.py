@@ -50,11 +50,24 @@ def process_media_file(
 ) -> ProcessingResult:
     media_type = _media_type(input_path)
     if media_type == "image":
-        prediction = detector.detect_image(input_path, data_type="image")
+        if hasattr(detector, "detect_image"):
+            prediction = detector.detect_image(input_path, data_type="image")
+        else:
+            prediction = detector.detect(
+                input_path, data_type="image", progress_bar=False
+            )
     else:
-        prediction = detector.detect_video(
-            input_path, data_type="video", skip_frames=video_skip_frames
-        )
+        if hasattr(detector, "detect_video"):
+            prediction = detector.detect_video(
+                input_path, data_type="video", skip_frames=video_skip_frames
+            )
+        else:
+            prediction = detector.detect(
+                input_path,
+                data_type="video",
+                skip_frames=video_skip_frames,
+                progress_bar=False,
+            )
 
     output_path = prediction_output_path(input_path, output_dir)
     prediction.to_csv(output_path, index=False)

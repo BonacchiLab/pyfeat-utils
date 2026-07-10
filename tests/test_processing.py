@@ -23,6 +23,15 @@ class FakeDetector:
         return FakePrediction({"frame": [1], "neutral": [0.8]})
 
 
+class FakeUnifiedDetector:
+    def __init__(self):
+        self.calls = []
+
+    def detect(self, path, data_type="image", skip_frames=None, progress_bar=True):
+        self.calls.append((path, data_type, skip_frames, progress_bar))
+        return FakePrediction({"frame": [1], "neutral": [0.8]})
+
+
 def test_process_media_file_writes_image_prediction(tmp_path):
     image = tmp_path / "face.png"
     image.write_text("image", encoding="utf-8")
@@ -46,6 +55,18 @@ def test_process_media_file_writes_video_prediction_with_skip_frames(tmp_path):
     assert result.media_type == "video"
     assert result.output_path == tmp_path / "clip.mp4.csv"
     assert detector.calls == [("video", video, "video", 7)]
+
+
+def test_process_media_file_supports_unified_pyfeat_detector_api(tmp_path):
+    video = tmp_path / "clip.mp4"
+    video.write_text("video", encoding="utf-8")
+    detector = FakeUnifiedDetector()
+
+    result = process_media_file(video, detector, video_skip_frames=7)
+
+    assert result.media_type == "video"
+    assert result.output_path == tmp_path / "clip.mp4.csv"
+    assert detector.calls == [(video, "video", 7, False)]
 
 
 def test_process_directory_discovers_configured_media(tmp_path):

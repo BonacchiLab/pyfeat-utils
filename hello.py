@@ -1,6 +1,3 @@
-from feat import Detector
-
-
 def main():
     """Print a friendly hello message."""
 
