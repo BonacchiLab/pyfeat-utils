@@ -1,14 +1,36 @@
 [project]
 name = "pyfeat-utils"
 version = "0.1.0"
-description = "Add your description here"
+description = "Utilities for batch py-feat processing and descriptive analysis"
 readme = "README.md"
-requires-python = ">=3.9"
-dependencies = ["pip", "py-feat"]
+requires-python = ">=3.11"
+dependencies = [
+    "py-feat>=2.0.3",
+]
+
+[project.scripts]
+pyfeat-utils = "pyfeat_utils.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["pytest>=8.3.5", "ruff>=0.11.4", "ipykernel"]
+dev = [
+    "ipykernel",
+    "pytest>=8.3.5",
+    "ruff>=0.11.4",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--basetemp=.pytest-tmp"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.uv]
+override-dependencies = [
+    "pandas>=2.2.3,<3",
+]
