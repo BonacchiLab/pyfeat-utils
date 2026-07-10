@@ -60,6 +60,15 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "process":
+        from pyfeat_utils.processing import process_directory
+
+        results = process_directory(config)
+        for result in results:
+            print(
+                f"Processed {result.media_type}: "
+                f"{result.input_path} -> {result.output_path}"
+            )
+        print(f"Processed {len(results)} file(s).")
         return 0
 
     parser.error(f"Unknown command: {args.command}")
