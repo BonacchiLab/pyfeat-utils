@@ -47,7 +47,19 @@ def main(argv: list[str] | None = None) -> int:
         print(str(exc), file=sys.stderr)
         return 2
 
-    if args.command in {"process", "stats"}:
+    if args.command == "stats":
+        from pyfeat_utils.statistics import (
+            compute_directory_statistics,
+            write_statistics_summary,
+        )
+
+        statistics = compute_directory_statistics(config.data_dir)
+        output_path = config.data_dir / "statistics_summary.csv"
+        write_statistics_summary(statistics, output_path)
+        print(f"Wrote statistics summary: {output_path}")
+        return 0
+
+    if args.command == "process":
         return 0
 
     parser.error(f"Unknown command: {args.command}")
